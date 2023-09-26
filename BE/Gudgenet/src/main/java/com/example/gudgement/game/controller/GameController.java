@@ -43,10 +43,9 @@ public class GameController {
     @PostMapping("/startRound")
     public ResponseEntity<Void> startRound(@RequestBody GameRequestDto gameRequestDto) {
         String roomNumber = gameRequestDto.getRoomNumber();
-        String username = gameRequestDto.getUserName();
 
         // Update the game acceptance status for the user.
-        gameRoundService.startRound(roomNumber, username);
+        gameRoundService.startRound(roomNumber);
 
         return ResponseEntity.ok().build();
     }
