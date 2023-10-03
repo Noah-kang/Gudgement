@@ -1,6 +1,9 @@
 package com.example.gudgement.game.service;
 
-import com.example.gudgement.CardService;
+import com.example.gudgement.card.service.CardService;
+import com.example.gudgement.card.service.CardServiceImpl;
+import com.example.gudgement.account.entity.VirtualAccount;
+import com.example.gudgement.account.repository.VirtualAccountRepository;
 import com.example.gudgement.game.dto.EquippedItemsDto;
 import com.example.gudgement.game.dto.GameResultDto;
 import com.example.gudgement.game.dto.GameUserInfoDto;
@@ -10,12 +13,10 @@ import com.example.gudgement.game.exception.BaseErrorException;
 import com.example.gudgement.game.exception.GameErrorCode;
 import com.example.gudgement.game.repository.GameRoomRepository;
 import com.example.gudgement.game.repository.GameUserRepository;
-import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.progress.entity.Progress;
 import com.example.gudgement.progress.repository.ProgressRepository;
 import com.example.gudgement.shop.dto.EquippedDto;
-import com.example.gudgement.shop.dto.ItemDto;
 import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import com.example.gudgement.member.repository.MemberRepository;
@@ -30,7 +31,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,7 +45,7 @@ public class GameServiceImpl implements GameService{
     private final MemberRepository memberRepository;
     private final InventoryRepository inventoryRepository;
     private final ProgressRepository progressRepository;
-
+    private final VirtualAccountRepository virtualAccountRepository;
     private final CardService cardService;
 
     @Scheduled(fixedRate = 1000)
@@ -114,7 +114,8 @@ public class GameServiceImpl implements GameService{
             for(String member : members){
                 log.info("Processing member: " + member);
 
-                cardService.generateAndStoreCards(roomNumber, member);
+                VirtualAccount virtualAccount = fetchVirtualAccount(member);  // Fetch the VirtualAccount of the user
+                cardService.generateAndStoreCards(virtualAccount, roomNumber, member);
 
                 EquippedItemsDto equippedItemsDto = fetchEquippedItems(member);
                 log.info("장착아이템까지는 가지고 옴");
@@ -259,6 +260,22 @@ public class GameServiceImpl implements GameService{
         return EquippedItemsDto.builder()
                 .items(equippedDtos)
                 .build();
+    }
+    public VirtualAccount fetchVirtualAccount(String nickname) {
+        Optional<Member> optionalMember = memberRepository.findByNickname(nickname);
+        if (!optionalMember.isPresent()) {
+            throw new RuntimeException("User not found: " + nickname);
+        }
+
+        Member member = optionalMember.get();
+
+        Optional<VirtualAccount> optionalVirtualAccount = virtualAccountRepository.findByVirtualAccountId(member.getVirtualAccountId());
+
+        if (!optionalVirtualAccount.isPresent()) {
+            throw new RuntimeException("Virtual account not found for user: " + nickname);
+        }
+
+        return optionalVirtualAccount.get();
     }
 
     @Transactional

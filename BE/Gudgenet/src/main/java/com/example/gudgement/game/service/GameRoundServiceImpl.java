@@ -1,10 +1,10 @@
 package com.example.gudgement.game.service;
 
-import com.example.gudgement.CardService;
+import com.example.gudgement.card.service.CardService;
+import com.example.gudgement.card.service.CardServiceImpl;
 import com.example.gudgement.game.dto.*;
 import com.example.gudgement.game.exception.BaseErrorException;
 import com.example.gudgement.game.exception.GameErrorCode;
-import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
