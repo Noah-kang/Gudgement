@@ -15,5 +15,5 @@ public interface InventoryService {
 
     List<EquippedDto> findMemberTypeitems(String type, Member member);
 
-//    void useItem(Long invenId);
+    void useItem(Long invenId);
 }

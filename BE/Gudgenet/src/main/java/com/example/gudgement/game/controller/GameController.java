@@ -9,6 +9,7 @@ import com.example.gudgement.shop.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -27,6 +28,7 @@ public class GameController {
     private final InventoryService inventoryService;
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @MessageMapping("/game/accept")
     public void acceptGame(@RequestBody GameRequestDto gameRequestDto) {
@@ -106,14 +108,13 @@ public class GameController {
         messagingTemplate.convertAndSend("/topic/game/" + messageDto.getRoomNumber() , message);
     }
 
-/*    @MessageMapping("/game/useItem")
+    @PostMapping("/useItem")
     public void useItem(ItemUserDto request) {
         // Use the item in the database.
         inventoryService.useItem(request.getInvenId());
 
-        // Set the game status to 'use' in Redis.
-        gameStatusService.setUseStatus(request.getRoomNumber(), request.getUserName());
+        redisTemplate.opsForHash().put(request.getRoomNumber(), request.getNickname() + ":item", "use");
 
-        // If you need to send a response back to the client, you can use SimpMessagingTemplate.
-    }*/
+//        messagingTemplate.convertAndSend("/topic/game/" + ItemUserDto.getRoomNumber() , "사용 완료");
+    }
 }
