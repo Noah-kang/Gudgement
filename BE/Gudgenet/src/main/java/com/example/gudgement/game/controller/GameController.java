@@ -66,6 +66,12 @@ public class GameController {
         gameRoundService.playRound(bettingDto);
     }
 
+    @Operation(summary = "카드 게임 포기")
+    @PostMapping("/giveUpRound")
+    public void giveUpRound(@RequestBody BettingDto bettingDto){
+        gameRoundService.giveUpRound(bettingDto);
+    }
+
     @Operation(summary = "최종 게임 결과 저장")
     @PostMapping("/api/game/end")
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {

@@ -142,6 +142,7 @@ public class MemberServiceImpl implements MemberService {
 
         List<Inventory> equippedInventories = inventoryRepository.findByMemberAndEquipped(member, true);
         List<Item> equippedItems = new ArrayList<>();
+
         for (Inventory inventory : equippedInventories) {
             Item item = inventory.getItemId();
             if (item == null) {
@@ -154,7 +155,7 @@ public class MemberServiceImpl implements MemberService {
                 .memberId(member.getMemberId())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
-//                .setItems(equippedItems)
+                .setItems(equippedItems)
                 .tiggle(member.getTiggle())
                 .level(member.getLevel())
                 .exp(member.getExp())
