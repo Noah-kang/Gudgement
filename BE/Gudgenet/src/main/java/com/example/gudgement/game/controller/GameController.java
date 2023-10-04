@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/game")
 @RequiredArgsConstructor
 public class GameController {
 
@@ -41,14 +40,14 @@ public class GameController {
     }
 
     @Operation(summary = "게임 수락(같은이름의 stomp도 있음)")
-    @PostMapping("/accept")
+    @PostMapping("/api/game/accept")
     public ResponseEntity<Void> acceptGamePost(@RequestBody GameRequestDto gameRequestDto) {
         gameService.acceptGame(gameRequestDto.getRoomNumber(), gameRequestDto.getNickName());
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "게임 거절(같은이름의 stomp도 있음)")
-    @PostMapping("/reject")
+    @PostMapping("/api/game/reject")
     public ResponseEntity<Void> rejectGamePost(@RequestBody GameRequestDto gameRequestDto) {
         gameService.rejectGame(gameRequestDto.getRoomNumber(), gameRequestDto.getNickName());
         return ResponseEntity.ok().build();
@@ -68,7 +67,7 @@ public class GameController {
     }
 
     @Operation(summary = "최종 게임 결과 저장")
-    @PostMapping("/end")
+    @PostMapping("/api/game/end")
     public ResponseEntity<Void> endGame(@RequestBody GameResultDto gameResultDto) {
         gameService.endGame(gameResultDto);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -146,7 +146,14 @@ public class GameRoundServiceImpl implements GameRoundService {
             resetStatusForNextRound(roomNumber);
 
             /*해당 선택된 카드 내용 redis에서 삭제하는 내용 구현*/
+            for (String userNickName : Arrays.asList(bettingDto.getNickName(), bettingDto.getOtherName())) {
+                String cardToRemove = (String)redisTemplate.opsForHash().get(roomNumber, userNickName + ":currentCard");
+                Long removeResult = redisTemplate.opsForSet().remove(roomNumber + ":" + userNickName + ":cards", cardToRemove);
 
+                if (removeResult == 0) {
+                    throw new RuntimeException("Failed to remove the card: " + cardToRemove);
+                }
+            }
         }
 
     }

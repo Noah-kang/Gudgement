@@ -52,7 +52,7 @@ public class CardServiceImpl implements CardService{
         List<String> cards = new ArrayList<>();
 
         for (TransactionHistory history : transactionHistories) {
-            cards.add("store" + history.getDepositSource() + ":" + history.getAmount());
+            cards.add(history.getDepositSource() + ":" + history.getAmount());
 
             if(cards.size() == 10)
                 break;
