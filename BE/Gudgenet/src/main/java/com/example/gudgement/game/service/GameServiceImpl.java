@@ -23,6 +23,7 @@ import com.example.gudgement.shop.entity.Inventory;
 import com.example.gudgement.shop.entity.Item;
 import com.example.gudgement.member.repository.MemberRepository;
 import com.example.gudgement.shop.repository.InventoryRepository;
+import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -51,6 +52,7 @@ public class GameServiceImpl implements GameService{
     private final VirtualAccountRepository virtualAccountRepository;
 
     private final CardService cardService;
+    private final TimerService timerService;
 
     @Scheduled(fixedRate = 1000)
     public void checkUnresponsiveUsers() {
@@ -102,6 +104,7 @@ public class GameServiceImpl implements GameService{
         if (allUsersAccepted(roomNumber)) {
             log.info("All users accepted. Sending start message and saving game room and users.");
            // messagingTemplate.convertAndSend("/topic/game/alarm/" + roomNumber, "All users success");
+            timerService.cancelTimer(roomNumber);
 
             // Save GameRoom and GameUser information in DB.
             saveGameRoomAndUsers(roomNumber);
@@ -233,6 +236,8 @@ public class GameServiceImpl implements GameService{
 
         // Delete the user's information from Redis.
         redisTemplate.delete(roomNumber);
+
+        timerService.cancelTimer(roomNumber);
     }
 
     private int fetchLevel(String nickname) {

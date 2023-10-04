@@ -6,12 +6,17 @@ import com.example.gudgement.match.dto.MatchDto;
 import com.example.gudgement.match.event.MatchRequestEvent;
 import com.example.gudgement.member.entity.Member;
 import com.example.gudgement.member.repository.MemberRepository;
+import com.example.gudgement.timer.service.TimerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +25,6 @@ public class MatchServiceImpl implements MatchService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ApplicationEventPublisher eventPublisher;
     private final MemberRepository memberRepository;
-
 
     public void addUserToGroup(MatchDto matchDto) {
         Optional<Member> user = memberRepository.findByNickname(matchDto.getNickName());
@@ -35,6 +39,7 @@ public class MatchServiceImpl implements MatchService {
 
     public void removeUserFromGroup(MatchDto matchDto) {
         String key = "Room:" + matchDto.getTiggle() + ":" + matchDto.getGrade();
+
         redisTemplate.opsForSet().remove(key, matchDto.getNickName());
     }
 }
