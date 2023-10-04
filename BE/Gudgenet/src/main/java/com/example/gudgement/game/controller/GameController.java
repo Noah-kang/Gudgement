@@ -5,6 +5,7 @@ import com.example.gudgement.game.service.GameRoundService;
 import com.example.gudgement.game.service.GameService;
 import com.example.gudgement.game.dto.MessageDto;
 import com.example.gudgement.game.dto.SendMessageDto;
+import com.example.gudgement.shop.service.InventoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,7 @@ public class GameController {
 
     private final GameService gameService;
     private final GameRoundService gameRoundService;
+    private final InventoryService inventoryService;
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -103,4 +105,15 @@ public class GameController {
 
         messagingTemplate.convertAndSend("/topic/game/" + messageDto.getRoomNumber() , message);
     }
+
+/*    @MessageMapping("/game/useItem")
+    public void useItem(ItemUserDto request) {
+        // Use the item in the database.
+        inventoryService.useItem(request.getInvenId());
+
+        // Set the game status to 'use' in Redis.
+        gameStatusService.setUseStatus(request.getRoomNumber(), request.getUserName());
+
+        // If you need to send a response back to the client, you can use SimpMessagingTemplate.
+    }*/
 }

@@ -5,6 +5,14 @@ import com.example.gudgement.card.service.CardServiceImpl;
 import com.example.gudgement.game.dto.*;
 import com.example.gudgement.game.exception.BaseErrorException;
 import com.example.gudgement.game.exception.GameErrorCode;
+import com.example.gudgement.member.entity.Member;
+import com.example.gudgement.member.repository.MemberRepository;
+import com.example.gudgement.shop.dto.EquippedDto;
+import com.example.gudgement.shop.entity.Inventory;
+import com.example.gudgement.shop.entity.Item;
+import com.example.gudgement.shop.exception.ItemErrorCode;
+import com.example.gudgement.shop.exception.NotFoundItemException;
+import com.example.gudgement.shop.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,7 +31,8 @@ public class GameRoundServiceImpl implements GameRoundService {
     private final CardService cardService;
     private final RedisTemplate<String, String> redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
-
+    private final MemberRepository memberRepository;
+    private final InventoryRepository inventoryRepository;
 
     @Transactional
     public GameRoundDto getGameStatus(GameRequestDto requestDto) {
@@ -78,7 +87,31 @@ public class GameRoundServiceImpl implements GameRoundService {
         cardInfo.setAmount(Long.parseLong(cardString.split(":")[1]));
         cardInfo.setOrder(Integer.parseInt(cardString.split(":")[2]));
 
-        return new GameRoundDto(userTiggles, cardInfo, rounds);
+        Member member = memberRepository.findByNickname(userName)
+                .orElseThrow(() -> new NotFoundItemException(ItemErrorCode.NOT_FOUND_ITEM));
+
+        List<Inventory> inventories = inventoryRepository.findByMemberAndItemId_TypeAndEquipped(member, "consumable", true);
+
+        List<EquippedDto> equippedItems = new ArrayList<>();
+
+        for (Inventory inventory : inventories) {
+            Item item = inventory.getItemId();
+            EquippedDto equippedItem = EquippedDto.builder()
+                    .invenId(inventory.getInvenId())
+                    .itemId(item.getItemId())
+                    .itemName(item.getItemName())
+                    .itemContent(item.getItemContent())
+                    .itemEffect(item.getItemEffect())
+                    .image(item.getImage())
+                    .isEquipped(inventory.isEquipped())
+                    .type(item.getType())
+                    .quantity(inventory.getQuantity())  // This field may be null if the item is not consumable.
+                    .build();
+
+            equippedItems.add(equippedItem);
+        }
+
+        return new GameRoundDto(userTiggles, cardInfo, rounds,equippedItems);
     }
 
     @Transactional

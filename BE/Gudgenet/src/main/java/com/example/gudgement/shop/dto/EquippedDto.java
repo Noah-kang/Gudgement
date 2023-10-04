@@ -19,13 +19,13 @@ public class EquippedDto implements Serializable {
     private String image;
     private boolean isEquipped;
     private String type;
-    private String subType;
+    private long typeId;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer quantity;
 
     @Builder
-    public EquippedDto(Long invenId, Long itemId, String itemName, String itemContent, String itemEffect, String image, boolean isEquipped, String type, String subType,Integer quantity) {
+    public EquippedDto(Long invenId, Long itemId, String itemName, String itemContent, String itemEffect, String image, boolean isEquipped, String type, Integer quantity, long typeId) {
         this.invenId = invenId;
         this.itemId = itemId;
         this.itemName = itemName;
@@ -34,8 +34,8 @@ public class EquippedDto implements Serializable {
         this.image = image;
         this.isEquipped = isEquipped;
         this.type = type;
-        this.subType = subType;
         this.quantity = quantity;
+        this.typeId = typeId;
     }
 
 }
