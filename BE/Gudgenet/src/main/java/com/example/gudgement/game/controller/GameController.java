@@ -108,6 +108,7 @@ public class GameController {
         messagingTemplate.convertAndSend("/topic/game/" + messageDto.getRoomNumber() , message);
     }
 
+    @Operation(summary = "소비아이템 사용")
     @PostMapping("/useItem")
     public void useItem(ItemUserDto request) {
         // Use the item in the database.
